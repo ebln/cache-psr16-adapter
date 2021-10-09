@@ -16,11 +16,13 @@ class CacheItemPool implements CacheItemPoolInterface
     private const DEFERED_TTL_NULL = '*NULL*';
     private CacheInterface $cache;
     /** @var array<string, SerializedItem> */
-    private array $defered = [];
+    private array      $defered = [];
+    private NowFactory $nowFactory;
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(CacheInterface $cache, ?NowFactory $nowFactory = null)
     {
-        $this->cache = $cache;
+        $this->cache      = $cache;
+        $this->nowFactory = $nowFactory ?? new NowFactory();
     }
 
     public function __destruct()
@@ -82,7 +84,7 @@ class CacheItemPool implements CacheItemPoolInterface
             // first test defered…
             if (isset($this->defered[$key]) /*&& $this->defered[$key] instanceof SerializedItem */) { // TODO
                 $expiry = $this->defered[$key]->getExpiresAt();
-                if (null === $expiry || $expiry > new \DateTimeImmutable()) {
+                if (null === $expiry || $expiry > $this->nowFactory->now()) {
                     return true; // report found if not expired
                 }
                 unset($this->defered[$key]); // remove defered
@@ -212,7 +214,7 @@ class CacheItemPool implements CacheItemPoolInterface
         if (null === $dateTime) {
             return null;
         }
-        $stringSeconds = \DateTime::createFromFormat('U', '0')->add((new \DateTime())->diff($dateTime))->format('U');
+        $stringSeconds = \DateTime::createFromFormat('U', '0')->add($this->nowFactory->now()->diff($dateTime))->format('U');
 
         return is_numeric($stringSeconds) ? (int)$stringSeconds : 0;
     }
