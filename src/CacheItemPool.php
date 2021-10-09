@@ -39,7 +39,7 @@ class CacheItemPool implements CacheItemPoolInterface
     }
 
     /**
-     * @psalm-param array<array-key, mixed> $keys
+     * @psalm-param array<mixed> $keys
      *
      * @return array<string, CacheItem>
      */
@@ -141,7 +141,7 @@ class CacheItemPool implements CacheItemPoolInterface
     public function save(CacheItemInterface $item): bool
     {
         $this->validateItem($item);
-        /* @var CacheItem $item */
+
         try {
             return $this->cache->set($item->getKey(), new SerializedItem($item->getExpiry(), $item->get()), $this->getTimeToLive($item->getExpiry()));
         } catch (\Throwable $t) {
@@ -153,7 +153,6 @@ class CacheItemPool implements CacheItemPoolInterface
     public function saveDeferred(CacheItemInterface $item): bool
     {
         $this->validateItem($item);
-        /* @var CacheItem $item */
         $this->defered[$item->getKey()] = new SerializedItem($item->getExpiry(), $item->get());
 
         return true;
@@ -170,8 +169,8 @@ class CacheItemPool implements CacheItemPoolInterface
                 $ttlMap[$seconds][$key] = $serializedValue;
                 unset($this->defered[$key]);
             }
-            foreach ($ttlMap as $seconds => $rawData) {
-                $seconds = self::DEFERED_TTL_NULL === $seconds ? null : $seconds;
+            foreach ($ttlMap as $nullableSeconds => $rawData) {
+                $seconds = self::DEFERED_TTL_NULL === $nullableSeconds ? null : $nullableSeconds;
                 if (!$this->cache->setMultiple($rawData, $seconds)) {
                     return false;
                 }

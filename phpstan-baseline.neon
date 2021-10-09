@@ -1,0 +1,67 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Psr\\\\Cache\\\\CacheItemInterface\\:\\:getExpiry\\(\\)\\.$#"
+			count: 3
+			path: src/CacheItemPool.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on DateTime\\|false\\.$#"
+			count: 1
+			path: src/CacheItemPool.php
+
+		-
+			message: "#^Method Brnc\\\\CachePsr16Adapter\\\\CacheItemPool\\:\\:getItems\\(\\) should return array\\<string, Brnc\\\\CachePsr16Adapter\\\\Model\\\\CacheItem\\> but returns array\\<int\\|string, Brnc\\\\CachePsr16Adapter\\\\Model\\\\CacheItem\\>\\.$#"
+			count: 1
+			path: src/CacheItemPool.php
+
+		-
+			message: "#^Parameter \\#2 \\$ttl of method Psr\\\\SimpleCache\\\\CacheInterface\\:\\:setMultiple\\(\\) expects DateInterval\\|int\\|null, int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/CacheItemPool.php
+
+		-
+			message: "#^Call to function is_string\\(\\) with int will always evaluate to false\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:deleteMultiple\\(\\) has parameter \\$keys with no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:getEpoch\\(\\) never returns null so it can be removed from the return typehint\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:getMultiple\\(\\) has parameter \\$keys with no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:getMultiple\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:setMultiple\\(\\) has parameter \\$values with no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Method Brnc\\\\tests\\\\CachePsr16Adapter\\\\helper\\\\Psr16Array\\:\\:validateKey\\(\\) has parameter \\$key with no typehint specified\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Result of && is always true\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: tests/helper/Psr16Array.php
+

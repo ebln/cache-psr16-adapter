@@ -10,7 +10,9 @@ use Psr\SimpleCache\CacheInterface;
 
 class Psr16Array implements CacheInterface
 {
+    /** @var array<string> */
     private array $values = [];
+    /** @var array<int, array<string>> */
     private array $ttlMap = [];
 
     public function get($key, $default = null)
