@@ -8,16 +8,20 @@ use DateTimeImmutable;
 
 class SerializedItem
 {
+    /** @psalm-var mixed */
     private $value;
     private ?DateTimeImmutable $expiresAt;
 
+    /**
+     * @psalm-param mixed $value
+     */
     public function __construct(?DateTimeImmutable $expiresAt, $value)
     {
         $this->expiresAt = $expiresAt;
         $this->value     = $value;
     }
 
-    /** @return mixed */
+    /** @psalm-return mixed */
     public function getValue()
     {
         return $this->value;

@@ -15,7 +15,7 @@ class CacheItemPool implements CacheItemPoolInterface
 {
     private const DEFERED_TTL_NULL = '*NULL*';
     private CacheInterface $cache;
-    /** @var SerializedItem[] */
+    /** @var array<string, SerializedItem> */
     private array $defered = [];
 
     public function __construct(CacheInterface $cache)
@@ -30,11 +30,19 @@ class CacheItemPool implements CacheItemPoolInterface
         }
     }
 
+    /** @psalm-param mixed $key */
     public function getItem($key): CacheItem
     {
+        $this->validateKey($key);
+
         return $this->getItems([$key])[$key];
     }
 
+    /**
+     * @psalm-param array<array-key, mixed> $keys
+     *
+     * @return array<string, CacheItem>
+     */
     public function getItems(array $keys = []): array
     {
         $items = [];
@@ -42,12 +50,19 @@ class CacheItemPool implements CacheItemPoolInterface
         try {
             foreach ($keys as $key) {
                 $this->validateKey($key);
-                $rawItem = $this->defered[$key] ?? $this->cache->get($key);
-                if ($rawItem instanceof SerializedItem) {
-                    $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt());
+
+                if (isset($this->defered[$key])) {
+                    $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt());
                 } else {
-                    $item = new CacheItem($key, null, false, null);
+                    /** @var ?SerializedItem $rawItem */
+                    $rawItem = $this->cache->get($key);
+                    if ($rawItem instanceof SerializedItem) {
+                        $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt());
+                    } else {
+                        $item = new CacheItem($key, null, false, null);
+                    }
                 }
+
                 $items[$key] = $item;
             }
         } catch (InvalidArgumentException $k) {
@@ -58,13 +73,14 @@ class CacheItemPool implements CacheItemPoolInterface
         return $items;
     }
 
+    /** @psalm-param mixed $key */
     public function hasItem($key): bool
     {
         $this->validateKey($key);
 
         try {
             // first test defered…
-            if (isset($this->defered[$key]) && $this->defered[$key] instanceof SerializedItem) {
+            if (isset($this->defered[$key]) /*&& $this->defered[$key] instanceof SerializedItem */) { // TODO
                 $expiry = $this->defered[$key]->getExpiresAt();
                 if (null === $expiry || $expiry > new \DateTimeImmutable()) {
                     return true; // report found if not expired
@@ -91,6 +107,7 @@ class CacheItemPool implements CacheItemPoolInterface
         return false;
     }
 
+    /** @psalm-param mixed $key */
     public function deleteItem($key): bool
     {
         $this->validateKey($key);
@@ -105,6 +122,7 @@ class CacheItemPool implements CacheItemPoolInterface
         return false;
     }
 
+    /** @psalm-param array<array-key, mixed> $keys */
     public function deleteItems(array $keys): bool
     {
         foreach ($keys as $key) {
@@ -125,7 +143,7 @@ class CacheItemPool implements CacheItemPoolInterface
         $this->validateItem($item);
         /* @var CacheItem $item */
         try {
-            return $this->cache->set($item->getKey(), new SerializedItem($item->getExpiry(), $item->getValue()), $this->getTimeToLive($item->getExpiry()));
+            return $this->cache->set($item->getKey(), new SerializedItem($item->getExpiry(), $item->get()), $this->getTimeToLive($item->getExpiry()));
         } catch (\Throwable $t) {
         }
 
@@ -136,7 +154,7 @@ class CacheItemPool implements CacheItemPoolInterface
     {
         $this->validateItem($item);
         /* @var CacheItem $item */
-        $this->defered[$item->getKey()] = new SerializedItem($item->getExpiry(), $item->getValue());
+        $this->defered[$item->getKey()] = new SerializedItem($item->getExpiry(), $item->get());
 
         return true;
     }
@@ -165,6 +183,9 @@ class CacheItemPool implements CacheItemPoolInterface
         return true;
     }
 
+    /**
+     * @psalm-assert CacheItem $item
+     */
     private function validateItem(CacheItemInterface $item): void
     {
         if (!$item instanceof CacheItem) {
@@ -174,6 +195,10 @@ class CacheItemPool implements CacheItemPoolInterface
         $this->validateKey($item->getKey());
     }
 
+    /**
+     * @psalm-param mixed $key
+     * @psalm-assert string $key
+     */
     private function validateKey($key): void
     {
         if (!is_string($key) || '' === $key || preg_match('#[{}()/\\\\@:]#', $key)) {

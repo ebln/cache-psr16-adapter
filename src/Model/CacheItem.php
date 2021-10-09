@@ -11,11 +11,15 @@ use Psr\Cache\CacheItemInterface;
 
 class CacheItem implements CacheItemInterface
 {
-    private string             $key;
+    /** @psalm-var mixed */
     private $value;
+    private string             $key;
     private bool               $hit;
     private ?DateTimeImmutable $expiry;
 
+    /**
+     * @psalm-param mixed $value
+     */
     public function __construct(string $key, $value, bool $hit, ?DateTimeImmutable $expiry)
     {
         $this->key    = $key;
@@ -29,6 +33,9 @@ class CacheItem implements CacheItemInterface
         return $this->key;
     }
 
+    /**
+     * @psalm-return mixed
+     */
     public function get()
     {
         return $this->value;
@@ -39,7 +46,10 @@ class CacheItem implements CacheItemInterface
         return $this->hit;
     }
 
-    public function set($value): self
+    /**
+     * @psalm-param mixed $value
+     */
+    public function set($value)
     {
         $this->value = $value;
         $this->hit   = true;
@@ -47,7 +57,12 @@ class CacheItem implements CacheItemInterface
         return $this;
     }
 
-    public function expiresAt($expiration): self
+    /**
+     * @param null|\DateTimeInterface $expiration
+     *
+     * @psalm-param mixed             $expiration
+     */
+    public function expiresAt($expiration)
     {
         if (null === $expiration) {
             $this->setExpiry(null);
@@ -65,7 +80,12 @@ class CacheItem implements CacheItemInterface
         return $this;
     }
 
-    public function expiresAfter($time): self
+    /**
+     * @param null|DateInterval|int $time
+     *
+     * @psalm-param mixed           $time
+     */
+    public function expiresAfter($time)
     {
         if (null === $time) {
             $this->setExpiry(null);
@@ -83,11 +103,6 @@ class CacheItem implements CacheItemInterface
     public function getExpiry(): ?DateTimeImmutable
     {
         return $this->expiry;
-    }
-
-    public function getValue()
-    {
-        return $this->value;
     }
 
     private function setExpiry(?DateTimeImmutable $expiry): void

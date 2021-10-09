@@ -42,10 +42,10 @@
         "phpunit": "phpunit --colors=auto",
         "test": [
             "composer normalize --dry-run",
-            "#psalm --find-unused-psalm-suppress --no-cache",
+            "psalm --find-unused-psalm-suppress --no-cache",
             "#phpstan analyse",
             "phpmd src,tests ansi naming codesize design",
-            "#@php-cs-fixer",
+            "@php-cs-fixer",
             "@phpunit"
         ]
     }
