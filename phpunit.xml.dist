@@ -3,6 +3,7 @@
   <coverage>
     <include>
       <directory>./src</directory>
+      <directory>./tests/helper</directory>
     </include>
   </coverage>
   <testsuites>
