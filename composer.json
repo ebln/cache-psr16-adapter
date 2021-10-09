@@ -1,0 +1,47 @@
+{
+    "name": "brnc/cache-psr16-adapter",
+    "description": "Provides a PSR-6 cache from a given PSR-16 instance.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Brnc\\CachePsr16Adapter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ebln",
+            "email": "34722048+ebln@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "psr/cache": "^1.0",
+        "psr/simple-cache": "^1.0"
+    },
+    "scripts": {
+        "coverage": "XDEBUG_MODE=coverage phpunit --coverage-html coverage --coverage-text --colors=auto",
+        "phpunit": "phpunit --colors=auto",
+        "php-cs-fixer": "php-cs-fixer fix -v --config=.php-cs-fixer.dist.php --using-cache=no --dry-run",
+        "test": [
+            "psalm --find-unused-psalm-suppress --no-cache",
+            "phpstan analyse",
+            "phpmd src,tests ansi naming #,codesize,design",
+            "@php-cs-fixer",
+            "@phpunit"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brnc\\tests\\CachePsr16Adapter\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpmd/phpmd": "^2.10",
+        "phpstan/phpstan": "^0.12.99",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.10",
+        "roave/security-advisories": "dev-latest",
+        "cache/integration-tests": "dev-master"
+    }
+}
