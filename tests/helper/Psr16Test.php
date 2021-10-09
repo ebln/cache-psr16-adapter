@@ -8,7 +8,8 @@ use Cache\IntegrationTests\SimpleCacheTest;
 
 /**
  * @internal
- * @coversNothing
+ * @covers \Brnc\tests\CachePsr16Adapter\helper\Psr16Array@covers \Brnc\tests\CachePsr16Adapter\helper\Psr16ArraySingleton
+ * @codeCoverageIgnore
  */
 final class Psr16Test extends SimpleCacheTest
 {
