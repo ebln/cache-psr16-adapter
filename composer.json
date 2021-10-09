@@ -1,13 +1,8 @@
 {
     "name": "brnc/cache-psr16-adapter",
-    "description": "Provides a PSR-6 cache from a given PSR-16 instance.",
     "type": "library",
+    "description": "Provides a PSR-6 cache from a given PSR-16 instance.",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Brnc\\CachePsr16Adapter\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "ebln",
@@ -19,29 +14,39 @@
         "psr/cache": "^1.0",
         "psr/simple-cache": "^1.0"
     },
-    "scripts": {
-        "coverage": "XDEBUG_MODE=coverage phpunit --coverage-html coverage --coverage-text --colors=auto",
-        "phpunit": "phpunit --colors=auto",
-        "php-cs-fixer": "php-cs-fixer fix -v --config=.php-cs-fixer.dist.php --using-cache=no --dry-run",
-        "test": [
-            "psalm --find-unused-psalm-suppress --no-cache",
-            "phpstan analyse",
-            "phpmd src,tests ansi naming #,codesize,design",
-            "@php-cs-fixer",
-            "@phpunit"
-        ]
+    "provide": {
+        "psr/cache-implementation": "^1.0"
+    },
+    "require-dev": {
+        "cache/integration-tests": "dev-master",
+        "ergebnis/composer-normalize": "^2.15",
+        "phpmd/phpmd": "^2.10",
+        "phpstan/phpstan": "^0.12.99",
+        "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-latest",
+        "vimeo/psalm": "^4.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brnc\\CachePsr16Adapter\\": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
             "Brnc\\tests\\CachePsr16Adapter\\": "tests/"
         }
     },
-    "require-dev": {
-        "phpmd/phpmd": "^2.10",
-        "phpstan/phpstan": "^0.12.99",
-        "phpunit/phpunit": "^9.5",
-        "vimeo/psalm": "^4.10",
-        "roave/security-advisories": "dev-latest",
-        "cache/integration-tests": "dev-master"
+    "scripts": {
+        "coverage": "XDEBUG_MODE=coverage phpunit --coverage-html coverage --coverage-text --colors=auto",
+        "php-cs-fixer": "php-cs-fixer fix -v --config=.php-cs-fixer.dist.php --using-cache=no --dry-run",
+        "phpunit": "phpunit --colors=auto",
+        "test": [
+            "composer normalize --dry-run",
+            "#psalm --find-unused-psalm-suppress --no-cache",
+            "#phpstan analyse",
+            "phpmd src,tests ansi naming codesize design",
+            "#@php-cs-fixer",
+            "@phpunit"
+        ]
     }
 }
