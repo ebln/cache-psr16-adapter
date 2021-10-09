@@ -23,6 +23,13 @@ class CacheItemPool implements CacheItemPoolInterface
         $this->cache = $cache;
     }
 
+    public function __destruct()
+    {
+        if (!empty($this->defered)) {
+            $this->commit();
+        }
+    }
+
     public function getItem($key): CacheItem
     {
         return $this->getItems([$key])[$key];
@@ -31,6 +38,7 @@ class CacheItemPool implements CacheItemPoolInterface
     public function getItems(array $keys = []): array
     {
         $items = [];
+
         try {
             foreach ($keys as $key) {
                 $this->validateKey($key);
@@ -115,7 +123,7 @@ class CacheItemPool implements CacheItemPoolInterface
     public function save(CacheItemInterface $item): bool
     {
         $this->validateItem($item);
-        /** @var CacheItem $item */
+        /* @var CacheItem $item */
         try {
             return $this->cache->set($item->getKey(), new SerializedItem($item->getExpiry(), $item->getValue()), $this->getTimeToLive($item->getExpiry()));
         } catch (\Throwable $t) {
@@ -127,7 +135,7 @@ class CacheItemPool implements CacheItemPoolInterface
     public function saveDeferred(CacheItemInterface $item): bool
     {
         $this->validateItem($item);
-        /** @var CacheItem $item */
+        /* @var CacheItem $item */
         $this->defered[$item->getKey()] = new SerializedItem($item->getExpiry(), $item->getValue());
 
         return true;
@@ -138,8 +146,9 @@ class CacheItemPool implements CacheItemPoolInterface
         try {
             $ttlMap = [];
             foreach ($this->defered as $key => $serializedValue) {
-                $seconds                = $this->getTimeToLive($serializedValue->getExpiresAt());
-                $seconds                ??= self::DEFERED_TTL_NULL;
+                $seconds = $this->getTimeToLive($serializedValue->getExpiresAt());
+                $seconds ??= self::DEFERED_TTL_NULL;
+
                 $ttlMap[$seconds][$key] = $serializedValue;
                 unset($this->defered[$key]);
             }
@@ -156,17 +165,10 @@ class CacheItemPool implements CacheItemPoolInterface
         return true;
     }
 
-    public function __destruct()
-    {
-        if (!empty($this->defered)) {
-            $this->commit();
-        };
-    }
-
     private function validateItem(CacheItemInterface $item): void
     {
         if (!$item instanceof CacheItem) {
-            throw new InvalidArgumentException('This cache pool «' . __class__ . '» only supports its own items «' . CacheItem::class . '»');
+            throw new InvalidArgumentException('This cache pool «' . __CLASS__ . '» only supports its own items «' . CacheItem::class . '»');
         }
 
         $this->validateKey($item->getKey());

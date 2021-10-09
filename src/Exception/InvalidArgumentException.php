@@ -9,6 +9,4 @@ use Psr\Cache\InvalidArgumentException as Psr6Exception;
 
 class InvalidArgumentException extends SplException implements Psr6Exception
 {
-
 }
-

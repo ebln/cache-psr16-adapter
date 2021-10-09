@@ -125,7 +125,7 @@ class Psr16Array implements CacheInterface
     }
 
     /**
-     * @param null|int|DateInterval $ttl
+     * @param null|DateInterval|int $ttl
      */
     private function getEpoch($ttl): ?int
     {

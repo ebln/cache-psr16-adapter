@@ -12,16 +12,10 @@ use Psr\Cache\CacheItemInterface;
 class CacheItem implements CacheItemInterface
 {
     private string             $key;
-    private                    $value;
+    private $value;
     private bool               $hit;
     private ?DateTimeImmutable $expiry;
 
-    /**
-     * @param string                 $key
-     * @param mixed                  $value
-     * @param bool                   $hit
-     * @param null|DateTimeImmutable $expiry
-     */
     public function __construct(string $key, $value, bool $hit, ?DateTimeImmutable $expiry)
     {
         $this->key    = $key;

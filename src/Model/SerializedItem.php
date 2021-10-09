@@ -8,8 +8,7 @@ use DateTimeImmutable;
 
 class SerializedItem
 {
-    /** @var mixed */
-    private                    $value;
+    private $value;
     private ?DateTimeImmutable $expiresAt;
 
     public function __construct(?DateTimeImmutable $expiresAt, $value)
