@@ -209,6 +209,11 @@ class CacheItemPool implements CacheItemPoolInterface
         }
     }
 
+    /**
+     * TODO Revisit!
+     *      Not the most performant way to caculate.
+     *      And using seconds-int instead of DateInterval towards PSR-16 might also not the best option
+     */
     private function getTimeToLive(?\DateTimeImmutable $dateTime): ?int
     {
         if (null === $dateTime) {
