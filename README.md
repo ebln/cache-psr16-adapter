@@ -6,7 +6,7 @@ As PSR-6 is more feature-rich than PSR-16, this adaption is not utterly performa
 
 A suitable use-case might be that you already went with the leaner PSR-16 in your project but now want to add a third-party package that only supports PSR-6. It should be fine if that package uses the cache only at initialization, e.g. for schema caching. If, however, there is excessive or highly interactive caching traffic, you should consider refactoring your project towards PSR-6.
 
-##Usage
+## Usage
 ```php
     $psr16 = new \Psr\SimpleCache\CacheInterface();
     $psr6  = new \Brnc\CachePsr16Adapter\CacheItemPool($psr16);
