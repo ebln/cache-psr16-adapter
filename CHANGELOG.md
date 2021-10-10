@@ -11,6 +11,7 @@ Intended to follow [«Keep a Changelog»](https://keepachangelog.com/en/)
 
 - Refactor `NowFactory` to PSR-20 [BREAKING] 
 - Revisit `\Brnc\CachePsr16Adapter\CacheItemPool::getTimeToLive`
+- Also `NowFactory` also for `CacheItem`
 - Add tests to ensure PSR-6 commits make use of PSR-16's bulk setters
 - Increase test coverage (using PSR-16 returning false & exceptions)
 
