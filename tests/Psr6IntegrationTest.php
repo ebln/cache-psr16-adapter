@@ -11,9 +11,9 @@ use Cache\IntegrationTests\CachePoolTest;
 /**
  * @internal
  * @covers \Brnc\CachePsr16Adapter\CacheItemPool
- * @covers \Brnc\tests\CachePsr16Adapter\helper\Psr16ArraySingleton
  * @covers \Brnc\CachePsr16Adapter\Model\CacheItem
  * @covers \Brnc\CachePsr16Adapter\Model\SerializedItem
+ * @covers \Brnc\tests\CachePsr16Adapter\helper\Psr16ArraySingleton
  * @codeCoverageIgnore
  */
 final class Psr6IntegrationTest extends CachePoolTest
