@@ -1,5 +1,5 @@
-PSR-16 to PSR-6 Adapter
-=======================
+PSR-6 cache implementation adapting PSR-16
+==========================================
 
 This package provides a PSR-6 cache instance when you only have a PSR-16 cache at hand.
 As PSR-6 is more feature-rich than PSR-16, this adaption is not utterly performant. And you should use it very carefully.
