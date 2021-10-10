@@ -82,7 +82,7 @@ class CacheItemPool implements CacheItemPoolInterface
 
         try {
             // first test defered…
-            if (isset($this->defered[$key]) /*&& $this->defered[$key] instanceof SerializedItem */) { // TODO
+            if (isset($this->defered[$key])) {
                 $expiry = $this->defered[$key]->getExpiresAt();
                 if (null === $expiry || $expiry > $this->nowFactory->now()) {
                     return true; // report found if not expired
