@@ -5,7 +5,7 @@ DOCKER_COMPOSE=docker-compose -f $(DOCKER_COMPOSE_YML)
 MAKE=make -s
 .DEFAULT_GOAL := help
 
-.PHONY: help build rm enter test quality style-fix coverage
+.PHONY: help build rm down stop enter test quality style-fix coverage
 
 help: ## Show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?##\s*.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?##\\s*"}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
