@@ -29,6 +29,7 @@ $config->setRiskyAllowed(true)
             'phpdoc_summary'             => false,
             'cast_spaces'                => ['space' => 'none'],
             'binary_operator_spaces'     => ['default' => null, 'operators' => ['=' => 'align_single_space_minimal', '=>' => 'align_single_space_minimal']],
+            'php_unit_strict'            => false,
         ]
     )
     ->setFinder($finder);
