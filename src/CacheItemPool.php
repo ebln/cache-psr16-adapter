@@ -54,14 +54,14 @@ class CacheItemPool implements CacheItemPoolInterface
                 $this->validateKey($key);
 
                 if (isset($this->defered[$key])) {
-                    $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt());
+                    $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt(), $this->nowFactory);
                 } else {
                     /** @var ?SerializedItem $rawItem */
                     $rawItem = $this->cache->get($key);
                     if ($rawItem instanceof SerializedItem) {
-                        $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt());
+                        $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt(), $this->nowFactory);
                     } else {
-                        $item = new CacheItem($key, null, false, null);
+                        $item = new CacheItem($key, null, false, null, $this->nowFactory);
                     }
                 }
 
