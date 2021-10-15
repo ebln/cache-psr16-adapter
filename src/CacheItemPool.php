@@ -50,22 +50,24 @@ class CacheItemPool implements CacheItemPoolInterface
         $items = [];
 
         try {
+            $downstreamKeys = [];
             foreach ($keys as $key) {
                 $this->validateKey($key);
-
                 if (isset($this->defered[$key])) {
-                    // NOTE In constrast to hasItem() this apparently always returns the defered item, even expired ones
-                    $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt(), $this->nowFactory);
+                    // "Revive" defered item. // NOTE In constrast to hasItem() this apparently always returns the defered item, even expired ones
+                    $items[$key] = $this->unserializeItem($key, $this->defered[$key]);
                 } else {
-                    /** @var ?SerializedItem $rawItem */
-                    $rawItem = $this->cache->get($key);
-                    if ($rawItem instanceof SerializedItem) {
-                        $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt(), $this->nowFactory);
-                    } else {
-                        $item = new CacheItem($key, null, false, null, $this->nowFactory);
-                    }
+                    $downstreamKeys[] = $key;
                 }
-
+            }
+            foreach ($downstreamKeys as $key) {
+                /** @var ?SerializedItem $rawItem */
+                $rawItem = $this->cache->get($key);
+                if ($rawItem instanceof SerializedItem) {
+                    $item = $this->unserializeItem($key, $rawItem);
+                } else {
+                    $item = new CacheItem($key, null, false, null, $this->nowFactory);
+                }
                 $items[$key] = $item;
             }
         } catch (InvalidArgumentException $k) {
@@ -183,6 +185,11 @@ class CacheItemPool implements CacheItemPoolInterface
         }
 
         return true;
+    }
+
+    private function unserializeItem(string $key, SerializedItem $serialized): CacheItem
+    {
+        return new CacheItem($key, $serialized->getValue(), true, $serialized->getExpiresAt(), $this->nowFactory);
     }
 
     /**
