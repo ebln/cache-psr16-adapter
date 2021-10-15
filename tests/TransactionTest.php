@@ -19,6 +19,56 @@ use Psr\SimpleCache\CacheInterface;
 final class TransactionTest extends TestCase
 {
     /**
+     * Ensures underlying PSR-16's `getMultiple()` is called not more than once per `getItems()`-call
+     */
+    public function testGetItems(): void
+    {
+        $psr16 = $this->createMock(CacheInterface::class);
+        $psr16->expects(static::once())
+            ->method('getMultiple')
+            ->with(['foo', 'bar', 'far'])->willReturn(
+                [
+                    'foo' => null,
+                    'bar' => ['bogus'],
+                    'far' => new SerializedItem(new DateTimeImmutable('2045-12-12'), ['hello', 'world']),
+                ]
+            );
+
+        $deferedItem = new CacheItem('baz', 'item 1', true, null, $this->getClock());
+        $pool        = new CacheItemPool($psr16);
+        $pool->saveDeferred($deferedItem);
+
+        static::assertEquals(
+            [
+                'baz' => $deferedItem,
+                'foo' => new CacheItem('foo', null, false, null, $this->getClock()),
+                'bar' => new CacheItem('bar', null, false, null, $this->getClock()),
+                'far' => new CacheItem('far', ['hello', 'world'], true, new DateTimeImmutable('2045-12-12'), $this->getClock()),
+            ],
+            $pool->getItems(['foo', 'bar', 'baz', 'far'])
+        );
+    }
+
+    /**
+     * Ensures underlying PSR-16's `getMultiple()` is never called
+     */
+    public function testGetItemsAllDefered(): void
+    {
+        $psr16 = $this->createMock(CacheInterface::class);
+        $psr16->expects(static::never())->method('getMultiple');
+
+        $item1 = new CacheItem('foo', 'item 1', true, null, $this->getClock());
+        $item2 = new CacheItem('bar', 'item 2', true, null, $this->getClock());
+        $pool  = new CacheItemPool($psr16);
+        $pool->saveDeferred($item1);
+        $pool->saveDeferred($item2);
+
+        $gotItems = $pool->getItems(['foo', 'bar']);
+
+        static::assertEquals(['foo' => $item1, 'bar' => $item2], $gotItems);
+    }
+
+    /**
      * Ensures underlying PSR-16's `deleteMultiple()` is only called once per `deleteItems()`-call
      */
     public function testDeleteItems(): void

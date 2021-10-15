@@ -41,6 +41,8 @@ class CacheItemPool implements CacheItemPoolInterface
     }
 
     /**
+     * NOTE: Returned key order is not preserved from the argument!
+     *
      * @psalm-param array<mixed> $keys
      *
      * @return array<string, CacheItem>
@@ -60,15 +62,19 @@ class CacheItemPool implements CacheItemPoolInterface
                     $downstreamKeys[] = $key;
                 }
             }
-            foreach ($downstreamKeys as $key) {
-                /** @var ?SerializedItem $rawItem */
-                $rawItem = $this->cache->get($key);
-                if ($rawItem instanceof SerializedItem) {
-                    $item = $this->unserializeItem($key, $rawItem);
-                } else {
-                    $item = new CacheItem($key, null, false, null, $this->nowFactory);
+
+            if ($downstreamKeys) {
+                /**
+                 * @var string          $key
+                 * @var ?SerializedItem $rawItem
+                 */
+                foreach ($this->cache->getMultiple($downstreamKeys) as $key => $rawItem) {
+                    if ($rawItem instanceof SerializedItem) {
+                        $items[$key] = $this->unserializeItem($key, $rawItem);
+                    } else {
+                        $items[$key] = new CacheItem($key, null, false, null, $this->nowFactory);
+                    }
                 }
-                $items[$key] = $item;
             }
         } catch (InvalidArgumentException $k) {
             throw $k;
