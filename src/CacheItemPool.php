@@ -41,6 +41,8 @@ class CacheItemPool implements CacheItemPoolInterface
     }
 
     /**
+     * NOTE: Returned key order is not preserved from the argument!
+     *
      * @psalm-param array<mixed> $keys
      *
      * @return array<string, CacheItem>
@@ -50,22 +52,29 @@ class CacheItemPool implements CacheItemPoolInterface
         $items = [];
 
         try {
+            $downstreamKeys = [];
             foreach ($keys as $key) {
                 $this->validateKey($key);
-
                 if (isset($this->defered[$key])) {
-                    $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt());
+                    // "Revive" defered item. // NOTE In constrast to hasItem() this apparently always returns the defered item, even expired ones
+                    $items[$key] = $this->unserializeItem($key, $this->defered[$key]);
                 } else {
-                    /** @var ?SerializedItem $rawItem */
-                    $rawItem = $this->cache->get($key);
+                    $downstreamKeys[] = $key;
+                }
+            }
+
+            if ($downstreamKeys) {
+                /**
+                 * @var string          $key
+                 * @var ?SerializedItem $rawItem
+                 */
+                foreach ($this->cache->getMultiple($downstreamKeys) as $key => $rawItem) {
                     if ($rawItem instanceof SerializedItem) {
-                        $item = new CacheItem($key, $rawItem->getValue(), true, $rawItem->getExpiresAt());
+                        $items[$key] = $this->unserializeItem($key, $rawItem);
                     } else {
-                        $item = new CacheItem($key, null, false, null);
+                        $items[$key] = new CacheItem($key, null, false, null, $this->nowFactory);
                     }
                 }
-
-                $items[$key] = $item;
             }
         } catch (InvalidArgumentException $k) {
             throw $k;
@@ -182,6 +191,11 @@ class CacheItemPool implements CacheItemPoolInterface
         }
 
         return true;
+    }
+
+    private function unserializeItem(string $key, SerializedItem $serialized): CacheItem
+    {
+        return new CacheItem($key, $serialized->getValue(), true, $serialized->getExpiresAt(), $this->nowFactory);
     }
 
     /**

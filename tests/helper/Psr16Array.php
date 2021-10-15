@@ -85,7 +85,9 @@ class Psr16Array implements CacheInterface
         }
         foreach ($keys as $key) {
             if (!$this->delete($key)) {
+                // @codeCoverageIgnoreStart
                 return false;
+                // @codeCoverageIgnoreEnd
             }
         }
 

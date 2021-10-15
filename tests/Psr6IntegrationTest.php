@@ -13,6 +13,7 @@ use Cache\IntegrationTests\CachePoolTest;
  * @covers \Brnc\CachePsr16Adapter\CacheItemPool
  * @covers \Brnc\CachePsr16Adapter\Model\CacheItem
  * @covers \Brnc\CachePsr16Adapter\Model\SerializedItem
+ * @covers \Brnc\CachePsr16Adapter\NowFactory
  * @covers \Brnc\tests\CachePsr16Adapter\helper\Psr16ArraySingleton
  * @codeCoverageIgnore
  */

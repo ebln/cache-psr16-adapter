@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brnc\CachePsr16Adapter\Model;
 
 use Brnc\CachePsr16Adapter\Exception\InvalidArgumentException;
+use Brnc\CachePsr16Adapter\NowFactory;
 use DateInterval;
 use DateTimeImmutable;
 use Psr\Cache\CacheItemInterface;
@@ -16,16 +17,18 @@ class CacheItem implements CacheItemInterface
     private string             $key;
     private bool               $hit;
     private ?DateTimeImmutable $expiry;
+    private NowFactory         $clock;
 
     /**
      * @psalm-param mixed $value
      */
-    public function __construct(string $key, $value, bool $hit, ?DateTimeImmutable $expiry)
+    public function __construct(string $key, $value, bool $hit, ?DateTimeImmutable $expiry, NowFactory $clock)
     {
         $this->key    = $key;
         $this->value  = $value;
         $this->hit    = $hit;
         $this->expiry = $expiry;
+        $this->clock  = $clock;
     }
 
     public function getKey(): string
@@ -90,9 +93,9 @@ class CacheItem implements CacheItemInterface
         if (null === $time) {
             $this->setExpiry(null);
         } elseif ($time instanceof DateInterval) {
-            $this->setExpiry((new DateTimeImmutable())->add($time));
+            $this->setExpiry($this->clock->now()->add($time));
         } elseif (is_int($time)) {
-            $this->setExpiry((new DateTimeImmutable())->add(new DateInterval('PT' . $time . 'S')));
+            $this->setExpiry($this->clock->now()->add(new DateInterval('PT' . $time . 'S')));
         } else {
             throw new InvalidArgumentException();
         }
