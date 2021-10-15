@@ -54,6 +54,7 @@ class CacheItemPool implements CacheItemPoolInterface
                 $this->validateKey($key);
 
                 if (isset($this->defered[$key])) {
+                    // NOTE In constrast to hasItem() this apparently always returns the defered item, even expired ones
                     $item = new CacheItem($key, $this->defered[$key]->getValue(), true, $this->defered[$key]->getExpiresAt(), $this->nowFactory);
                 } else {
                     /** @var ?SerializedItem $rawItem */
