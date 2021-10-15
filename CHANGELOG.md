@@ -14,13 +14,13 @@ Intended to follow [«Keep a Changelog»](https://keepachangelog.com/en/)
 ### Added
 
 - Increase test coverage (using PSR-16 exceptions)
+- Add tests to ensure PSR-6 commits make use of PSR-16's bulk setters
 
 ### TODO
 
 - Refactor `NowFactory` to PSR-20 [BREAKING]
 - Revisit `\Brnc\CachePsr16Adapter\CacheItemPool::getTimeToLive`
 - Change `getItems` to use `getMultiple`
-- Add tests to ensure PSR-6 commits make use of PSR-16's bulk setters
 
 ----
 
