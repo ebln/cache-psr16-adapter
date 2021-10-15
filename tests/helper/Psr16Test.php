@@ -18,4 +18,11 @@ final class Psr16Test extends SimpleCacheTest
     {
         return new Psr16Array();
     }
+
+    /* just for coverage, TTL cannot be read back and Psr16Array has no injected clock */
+    public function testOverlyLargeTtl(): void
+    {
+        $cache = $this->createSimpleCache();
+        static::assertTrue($cache->set('foo', 'bar', PHP_INT_MAX - (int)(time() / 2)));
+    }
 }
